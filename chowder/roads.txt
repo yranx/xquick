@@ -1,0 +1,222 @@
+1.Mybatis-Plus 搭建与使用入门
+https://www.jb51.net/article/141573.htm
+Mybatis-Plus（简称MP）是一个 Mybatis 的增强工具，在 Mybatis 的基础上只做增强不做改变，为简化开发、提高效率而生。
+
+MybatisPlusConfig.java  MyMetaObjectHandler.java    GeneratorServiceEntity.java
+
+2.SpringBoot+Redis实现token鉴权
+https://www.imooc.com/article/49750
+  用户登录成功后后台会返回一个token给调用者，同时我们自定义了@AuthToken注解，被该注解标注的api进行请求的时候都需要进行token效验，
+  效验通过才可以正常访问，实现接口级的鉴权控制。同时token具有生命周期，在用户持续一段时间不进行操作的话，token则会过期，
+  用户一直操作的话，则不会过期。
+
+  创建数据结构：
+
+  SET FOREIGN_KEY_CHECKS=0;
+
+  -- ----------------------------
+  -- Table structure for t_sys_user
+  -- ----------------------------
+  DROP TABLE IF EXISTS `t_sys_user`;
+  CREATE TABLE `t_sys_user` (
+    `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID',
+    `username` varchar(30) DEFAULT NULL COMMENT '用户名',
+    `password` varchar(30) DEFAULT NULL COMMENT '密码',
+    `created_at` datetime DEFAULT NULL COMMENT '创建时间',
+    `updated_at` datetime DEFAULT NULL COMMENT '更新时间',
+    `del_flag` tinyint(1) DEFAULT NULL COMMENT '删除标识 0:未删除 1:已删除',
+    PRIMARY KEY (`id`)
+  ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
+
+  流程分析
+  1).客户端登录，输入用户名和密码，后台进行验证，如果验证失败则返回登录失败的提示。
+  如果验证成功，则生成token然后将username和token双向绑定(可以根据username取出token也可以根据token取出username)存入redis,
+  同时使用token+username作为key把当前时间戳也存入redis。并且给它们都设置过期时间。
+  2)每次请求都会走拦截器，如果该接口标注了@AuthToken注解，则要检查http header中的Authorization字段，获取token，
+  然后由于token与username双向绑定，我们可以通过获取的token来尝试从redis中获取username,如果可以获取则说明token正确，反之，说明错误，返回鉴权失败。
+  3)token可以根据用户使用的情况来动态的调整自己过期时间。我们在生成token的同时也往redis里面存入了创建token时的时间戳，
+  每次请求被拦截器拦截token 验证成功之后，将当前时间与存在redis里面的token生成时刻的时间戳进行比较，
+  当当前时间的距离创建时间快要到达设置的redis过期时间的话，就重新设置token过期时间，将过期时间延长。
+  如果用户在设置的redis过期时间的时间长度内没有进行任何操作（没有发请求），则token会在redis中过期。
+
+  ConstantUtil Md5TokenGenerator TokenGenerator AuthToken AuthorizationInterceptor  WebAppConfiguration  UserLoginController
+
+3.网络安全通信---AES+BASE64
+https://www.imooc.com/article/49811
+https://www.cnblogs.com/hailiang/archive/2012/02/29/2373154.html
+    网络层封装的一套加密、解密，编码、解码的规则
+    身份校验--MD5算法
+        no.1 身份校验：校验访问接口的用户合法性，就是过滤掉那些通过脚本或者其他非正常app发起的访问请求
+        no.2 MD5算法： MD5算法可以对一串输入生成一串唯一的不可逆的128bit的0和1的二进制串信息。
+                       通常 app 都会在发起请求前根据自己公司所定义的规则做一次 MD5 计算，作为 token 发送给服务端进行校验。
+                       MD5 有两个特性：唯一性和不可逆性。
+        no.3 16位和32位的MD5值:  md5计算工具 http://www.cmd5.com/
+                       MD5计算后输出是 128 bit 的 0 和 1 二进制串，1个十六进制是 4 个 bit，128 / 4 = 32，所以常说的 32 位的 MD5 指的是用十六进制来表示的输出串。
+                       那么，为什么还会有 16 位的 MD 值？其实也就是嫌 32 位的数据太长了，所以去掉开头 8 位，末尾 8 位，截取中间的 16 位来作为 MD5 的输出值。
+                       所以，MD5 算法的输出只有一种：128 bit 的二进制串，而通常结果都用十六进制表示而已。
+        no.4 MD5的应用：数字签名、身份校验、完整性（一致性）校验
+                        【app 持有一串密钥，这串密钥服务端也持有，除此外别人都不知道，因此 app 就可以跟服务端协商，
+                         两边统一下交互的时候都有哪些数据是需要加入 MD5 计算的，以怎样的规则拼接进行 MD5 运算的，
+                         这样一旦这些数据被三方攻击者篡改了，也能检查出来。
+                         也就是说，密钥和拼接规则都是关键点，不可以泄漏出去。】
+    敏感数据加密 -- AES + BASE64
+        UTF-8 + AES + BASE64
+            no.1 UTF-8 和 BASE64 都属于编解码，AES 属于对称加密算法。
+            no.2 信息其实本质上是由二进制串组成，通过各种不同的编码格式，来将这段二进制串信息解析成具体的数据
+            AES 属于对称加密算法，对称的意思是说，加密方和解密方用的是同一串密钥。
+            信息经过加密后会变成一串毫无规律的二进制串，此时再选择一种编码方式来展示，通常是 BASE64 格式的编码。
+            no.3 BASE64 编码是将所有信息都编码成只用大小写字母、0-9数字以及 + 和 / 64个字符表示，所有称作 BASE64。
+            no.4 需要注意的是，因为 AES 加解密时输入和输出都是二进制串的信息，因此，在发送时需先将明文通过 UTF-8 解码成二进制串，然后进行加密，
+            再对这串二进制密文通过 BASE64 编程成密文串发送给接收方。
+
+        AES 加解密模式分很多种，首先，它有三种密钥形式，分别是 128 bit，192 bit，256 bit
+        AES 还分四种模式的加解密算法：ECB，CBC，CFB，OFB
+        最后一点，使用 CBC 模式进行加密时，是对明文串进行分组加密的，每组的大小都一样，因此在分组时就有可能会存在最后一组的数量不够的情况，那么这时就需要进行填充，
+        而这个填充的概念就是 PKCS5Padding 和 PKCS7Padding 两种。
+        这两种的填充规则都一样，区别只在于分组时规定的每组的大小。在PKCS5Padding中，明确定义 Block 的大小是 8 位，
+        而在 PKCS7Padding 定义中，对于块的大小是不确定的，可以在 1-255 之间。
+
+4.springboot使用WebJars结合前端
+    引入webjars，以jar包的形式加入项目
+    no.1 pom.xml中引入 <!-- 引用bootstrap -->
+              		<dependency>
+              			<groupId>org.webjars</groupId>
+              			<artifactId>bootstrap</artifactId>
+              			<version>3.3.7-1</version>
+              		</dependency>
+
+              		<!-- 引用jquery -->
+              		<dependency>
+              			<groupId>org.webjars</groupId>
+              			<artifactId>jquery</artifactId>
+              			<version>3.1.1</version>
+              		</dependency>
+    no.2 在src/main/resources/static文件下新建index.html,引用
+
+5.SpringBoot的国际化使用
+https://www.dalaoyang.cn/article/10
+    no.1加入了nekohtml去掉html严格校验
+    <!--去除html严格校验-->
+		<dependency>
+			<groupId>net.sourceforge.nekohtml</groupId>
+			<artifactId>nekohtml</artifactId>
+			<version>1.9.15</version>
+		</dependency>
+	no.2配置
+        ##去除thymeleaf的html严格校验
+        spring.thymeleaf.mode=LEGACYHTML5
+    no.3 配置文件：在resources里面新建messages.properties（默认配置），messages_en_US.properties（英文），messages_zh_CN.properties（中文）
+    no.4 在templates下新建chinaEng.html
+    no.5 创建国际化配置文件，I18Config.java   IndexController.java--hello
+
+6.邮件
+    no.1 pom.xml
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-mail</artifactId>
+            </dependency>
+    no.2 配置文件
+    no.3 MailController.java
+
+7.几个数据源配置啥的以后用到再去了解
+https://www.dalaoyang.cn/article/11
+https://www.dalaoyang.cn/article/25
+https://www.dalaoyang.cn/article/26
+https://www.dalaoyang.cn/article/53
+
+8.使用Actuator监控
+(还有admin监控，用到再了解https://www.dalaoyang.cn/article/33)
+https://www.dalaoyang.cn/article/27
+    对应用自身监控，以及对应用系统配置查看等功能
+    no.1 pom.xml
+    <dependency>
+    			<groupId>org.springframework.boot</groupId>
+    			<artifactId>spring-boot-starter-actuator</artifactId>
+    		</dependency>
+    no.2 配置
+    info.name=ranx
+    info.server.port=${server.port}
+
+9.《重构，改善既有代码的设计》 -- Martin Fowler
+好的测试是重构的根本
+该测试必须有自我检验能力
+    P34（1）如何切开长函数，并把较小块代码移至更合适的类
+        step1:找出代码的逻辑泥团（如本例的switch）
+            s1.找出函数内的局部变量和参数（如each[未被修改]和thisAmount[被修改]），任何不会被修改的变量可以当成参数传入新函数，
+            只有一个变量被修改的话，可当做返回值
+            s2.酌情更改新函数的变量名，写出人能懂的代码,代码要表现出自己的目的
+        step2:搬移代码块，由于改代码块未使用该类中信息，需要搬到相关类中,注意相关参数要去除了，且更换了函数名
+        step3:去除不必要的多次跳转，去除临时变量(无用中继跳转的直接去掉，需要值得用查询来取代)
+        step4:分清责任，提炼到相关类，在自身上运用数据
+        step5:非该类本身的，替换因条件而异的代码，提出稳定条件的代码到对应类中
+            运用多态取代switch,注意在生命周期内，哪些是自身可以修改的，哪些是自身不能修改的
+    P78 重构(名词):对软件内部结构的一种调整，目的是在不改变软件外部观察行为的前提下，提高其可理解性，降低其修改成本
+                有助于深入理解代码
+                事不过三，三则重构，任何时间（添加功能时、修补错误时、复审代码时）都可以重构
+    P101 坏味道： 重复代码、过长函数（每当感觉需要注释来说明的时候，把需要说明的东西写进一个独立函数中）
+        （条件表达式和循环常常也是提炼的信号）、过大的类（通过客户端的使用，为每一种使用方式提炼一个接口）、
+        过长参数列、发散式变化（某个类经常因不同的原因在不同的方向上发生变化）、霰弹式修改（遇到某种变化，都必须在许多不同的类中做出小修改）、
+        （可将需修改的代码放进同一个类，若眼下没合适类放置，就创造一个）、依恋情节（将总一起变化的东西放一块）、
+        数据泥团(减少字段和参数的个数)、基本类型偏执（将原本单独存在的数据值替换为对象）、
+        switch(用多态替换，switch语句常常根据类型码进行选择，需要的是'与该类型码相关的函数或类')、
+        平行继承体系（某个继承体系的类名称前缀和另一个类名称前缀完全相同）（让一个继承体系的实例引用另一个继承体系的实例）、
+        冗赘类（一个类所得不值其身价，就应当消失）、未来性（处理一些非必要的事情，如果多余请除掉）、
+        令人迷惑的暂时字段（对象中某个实例变量仅为某种特定情况而设）（提炼所有和该变量的代码到新类中）、
+        过度耦合的消息链（观察消息链的最终的对象的用处，看看是否能提炼该对象的代码到一个独立函数，再将该函数推入消息链）、
+        Middle Man(中间人)（跨过过度委托，直接和真正负责的对象打交道）、狎昵关系（分开两个类，比如继承关系的，或者将两个的类共同点提炼出来）、
+        异曲同工的类（根据用途重新命名，移动方法将某些行为移入类）、不完美的库类、
+        纯粹的数据类（仅仅是数据容器）（私有化其字段，封装好,且搬移来取值/设值函数）、
+        过多的注释（好的代码已经说清楚了）
+    P114 自测试代码：建议建立一个独立类用于测试，并在一个框架中运行它。
+        JUnit
+
+        小步前进，频繁测试
+    P135 1)提炼函数：将过长函数中一段代码放进一个独立函数中，让函数名称解释函数的用途
+         2)内联函数,在函数调用点插入函数本体，然后移除该函数
+         3）将赋值给临时变量直接改为表达式赋值形式，去除掉临时变量（可将临时变量声明为final,来检查他们是否的确只被赋值一次）
+         4）用查询或查询函数替代临时变量
+         5)引入解释性变量：将复杂表达式（或者其中一部分）的结果放进一个临时变量，以解释表达式
+         6）分解同一个被多次用于不同用途的临时变量为各自用途时的新异名变量
+         7）移除对参数的赋值，参数只作为被传递进来的东西
+         8）以函数对象取代函数，将一个函数放进一个单独对象中，局部变量就变成了对象中的字段，在该对象中就可以分解大型函数为
+         多个小型函数
+         9) 替换算法：将某个算法替换为另一个更清晰的算法
+    P167 1）搬移函数： 使用另一个对象的次数比只用自己所驻对象的次数还多
+            搬移字段：在目标类新建一个字段，修改源字段的所有用户，令它们改用新字段
+            提炼类： 某个类做了应该由两个类做的事，建立一个新类，将相关字段和函数从旧类搬移到新类
+            将类内联化： 将这个类的所有特性搬移到另一个类中，然后移除原类
+            隐藏“委托关系”：将直接调用一个对象通过一个委托类来调用
+            移除中间人：某个类做了过多的简单委托动作   让客户直接调用受托类，跳过委托类
+            引入外加函数：建立一个函数，以第一函数的形式春如一个实例
+            引入本地扩展：对源码进行 子类化和包装，提供源类的一切特性，同时添加新特性
+
+10.Netty 04:40
+  (1)telnet
+        Telnet协议是TCP/IP协议族的其中之一，是Internet远程登录服务的标准协议和主要方式，
+    常用于网页服务器的远程控制，可供使用者在本地主机运行远程主机上的工作。使用者首先在电脑执行Telnet程序，连线至目的地服务器，然后输入帐号和密码以验证身份。
+    使用者可以在本地主机输入命令，然后让已连接的远端主机执行，就像直接在对方的控制台上输入一样。传统Telnet会话所传输的资料并未加密，帐号和密码等敏感资料容易会被窃听，
+    因此很多服务器都会封锁Telnet服务，改用更安全的SSH。
+        ping通常是用来检查网络是否通畅或者网络连接速度的命令;
+        telnet是用来探测指定ip是否开放指定端口的。
+        程序和功能->启用或关闭Windows功能->勾选Telnet客户端
+
+     启动服务，cmd:telnet 127.0.0.1 监听端口 进入输入界面，ctrl+]进入命令界面
+
+  (2)netty版本大致版本分为  netty3.x  和  netty4.x（推荐）、netty5.x（重大bug,放弃）
+    流行的Java Nio网络通信框架
+    能够接收TCP、Http、Websocket、Https、UDP等协议发来的通信消息
+    高性能服务器
+
+  (3)ELK (LogStash、Elasticsearch、Kibana)
+    LogStash:tcp监听netty服务器发送的消息，并把消息处理好后转发给ES
+    Elasticsearch：接收LogStash发送来的数据，并进行分词构建索引
+    Kibana：主要从ES中获取相关的索引的数据进行检索、分析 （页面展示）
+
+11.Redis
+    (1)NoSql出现的需求场景：高并发读写、海量数据的高效率存储和访问、高可扩展性和高可用性
+
+12.rabbitMQ
+博客
+https://www.cnblogs.com/LipeiNet/category/896408.html
+官方git
+https://github.com/rabbitmq/rabbitmq-tutorials/tree/master/java

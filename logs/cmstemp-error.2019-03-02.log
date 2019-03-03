@@ -1,0 +1,1 @@
+2019-03-02 21:11:25 ERROR  at com.ranx.handler.SystemExceptionHandler.handlerAuthorizeException(SystemExceptionHandler.java:40) - 管理员未登录 
