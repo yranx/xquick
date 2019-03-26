@@ -25,3 +25,5 @@
 /.nb-gradle/
 *.log
 *.logs
+
+/src/main/java/com/ranx/chowder/study/designPatterns/proxy_force
