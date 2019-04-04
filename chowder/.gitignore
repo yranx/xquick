@@ -26,4 +26,4 @@
 *.log
 *.logs
 
-/src/main/java/com/ranx/chowder/study/designPatterns/proxy_force
+/src/main/java/com/ranx/chowder/study/designPatterns/proxy_force/*
