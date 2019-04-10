@@ -4,6 +4,10 @@ import java.time.*;
 
 /**
  * 新的时间
+ * LocalDate - 日期函数
+ * LocalTime - 时间函数
+ * LocalDateTime - 日期 + 时间 函数
+ * DateTimeFormatter - 日期时间格式化函数
  * @author ranx
  * @create 2018-08-30 10:22
  **/
