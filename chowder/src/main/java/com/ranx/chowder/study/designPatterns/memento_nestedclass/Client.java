@@ -8,10 +8,9 @@ public class Client {
     public static void main(String[] args) {
         Originator originator = new Originator();
         Caretaker caretaker  = new Caretaker();
-        //创建多个备忘录
-        caretaker.setMemento("001", originator.createMemento());
-        caretaker.setMemento("002", originator.createMemento());
+        //创建备忘录
+        caretaker.setMemento(originator.createMemento());
         //恢复一个指定标记的备忘录
-        originator.restoreMemento(caretaker.getMemento("001"));
+        originator.restoreMemento(caretaker.getMemento());
     }
 }
