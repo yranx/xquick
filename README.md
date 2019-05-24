@@ -19,6 +19,10 @@ chowder:
 11. reflect
 12. db连接池：DBCP、c3p0
 
+xlogs:
+1. 日志总结：Log4j、log4j2、slf4j+Logback
+2. 原型模式
+
 
 shiro权限管理一块可以学学
 进行ajax优化
