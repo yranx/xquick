@@ -1,7 +1,5 @@
-package com.ranx.chowder.study.designPatterns.bridge_nomal;
+package com.ranx.chowder.study.designPatterns.bridge_corp_copy;
 
-
-import com.ranx.chowder.study.designPatterns.bridge_corp.ClothesCorp;
 
 /**
  * @author ranx

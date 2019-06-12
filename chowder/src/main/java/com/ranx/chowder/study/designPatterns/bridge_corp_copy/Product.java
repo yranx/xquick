@@ -1,4 +1,4 @@
-package com.ranx.chowder.study.designPatterns.bridge_nomal;
+package com.ranx.chowder.study.designPatterns.bridge_corp_copy;
 
 /**
  * 抽象产品类
