@@ -75,5 +75,6 @@
       <module>cmstemp</module>
       <module>chowder</module>
       <module>xlogs</module>
+      <module>quicksboot</module>
   </modules>
 </project>
