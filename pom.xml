@@ -76,5 +76,6 @@
       <module>chowder</module>
       <module>xlogs</module>
       <module>quicksboot</module>
+      <module>geneator</module>
   </modules>
 </project>
