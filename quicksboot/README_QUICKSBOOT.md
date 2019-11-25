@@ -1,0 +1,10 @@
+- 1.Mybatis-Plus 搭建与使用入门
+- 2.SpringBoot+Redis实现token鉴权
+- 3.网络安全通信---AES+BASE64
+- 4.springboot使用WebJars结合前端
+- 5.SpringBoot的国际化使用
+- 6.邮件 
+- 7.几个数据源配置啥的以后用到再去了解
+- 8.使用Actuator监控
+- 10.Redis
+- 11.rabbitMQ
