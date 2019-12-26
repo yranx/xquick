@@ -1,4 +1,4 @@
-package com.ranx.utils;
+package com.ranx.chowder.encrypt;
 
 
 import sun.misc.BASE64Decoder;
@@ -7,11 +7,12 @@ import sun.misc.BASE64Encoder;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+
 /**
  * @author ranx
  * @create 2018-08-09 10:45
  **/
-public class EncryptDecryptUtils {
+public class EncryptDecrypt {
 
     private static final String ENCODE = "UTF-8";
     //AES模式（CBC+PKCS5padding模式），CBC 需要一个AES_IV偏移量参数，而AES_KEY 是密钥。
