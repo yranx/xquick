@@ -10,6 +10,7 @@ concurrentPage| ConcurrentHashMap
 cusannotation| 注解
 dataStructure| 数据结构
 dbexport | 数据库表导出（考虑做成页面选择形式）
+dbexport | 《深入理解java虚拟机:JVM高级特性与最佳实践》
 designPatterns| 设计模式
 encrypt| 加密相关
 ftp| ftp
