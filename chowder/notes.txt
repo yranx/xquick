@@ -107,3 +107,115 @@
           而这个填充的概念就是 PKCS5Padding 和 PKCS7Padding 两种。
           这两种的填充规则都一样，区别只在于分组时规定的每组的大小。在PKCS5Padding中，明确定义 Block 的大小是 8 位，
           而在 PKCS7Padding 定义中，对于块的大小是不确定的，可以在 1-255 之间。
+
+4.JUC相关20190828
+https://www.cnblogs.com/linkworld/p/7819270.html
+https://blog.csdn.net/china_wanglong/article/details/38828407
+
+CountDownLatch(闭锁)
+同步锁(Lock)
+ReadWriteLock(读写锁)
+
+JUC 简介
+在 Java 5.0 提供了 java.util.concurrent(简称JUC)包,在此包中增加了在并发编程中很常用的工具类,
+用于定义类似于线程的自定义子系统,包括线程池,异步 IO 和轻量级任务框架;
+还提供了设计用于多线程上下文中的 Collection 实现等;
+
+1.JUC包
+Atomic : AtomicInteger
+Locks : Lock, Condition, ReadWriteLock
+Collections : Queue, ConcurrentMap
+Executer : Future, Callable, Executor
+Tools : CountDownLatch, CyclicBarrier, Semaphore
+
+2. volatile 关键字
+volatile 关键字: 当多个线程进行操作共享数据时,可以保证内存中的数据是可见的;
+相较于 synchronized 是一种较为轻量级的同步策略;
+volatile 不具备"互斥性";
+volatile 不能保证变量的"原子性";
+
+volatile语义：
+volatile实现了类似synchronized的语义，却又没有锁机制。它确保对  volatile字段的更新以可预见的方式告知其他的线程。
+
+Java 存储模型不会对volatile指令的操作进行重排序：这个保证对volatile变量的操作时按照指令的出现顺序执行的。
+volatile变量不会被缓存在寄存器中（只有拥有线程可见），每次总是从主存中读取volatile变量的结果。
+ps：volatile并不能保证线程安全的，也就是说volatile字段的操作不是原子性的，volatile变量只能保证可见性。
+
+3.JDK1.5 以后, java.util.concurrent.atomic包下,提供了常用的原子变量;
+原子变量中的值,使用 volatile 修饰,保证了内存可见性;
+CAS(Compare-And-Swap) 算法保证数据的原子性;
+
+ CAS 算法
+CAS(Compare-And-Swap) 算法是硬件对于并发的支持,针对多处理器操作而设计的处理器中的一种特殊指令,
+用于管理对共享数据的并发访问;
+CAS 是一种无锁的非阻塞算法的实现;
+CAS 包含了三个操作数:
+	需要读写的内存值: V
+	进行比较的预估值: A
+	拟写入的更新值: B
+当且仅当 V == A 时, V = B, 否则,将不做任何操作;
+
+4.并发容器类
+Java 5.0 在 java.util.concurrent 包中提供了多种并发容器类来改进同步容器的性能;
+1.ConcurrentHashMap 同步容器类是 Java5 增加的一个线程安全的哈希表;介于 HashMap 与 Hashtable 之间;
+内部采用"锁分段"机制替代Hashtable的独占锁,进而提高性能;
+
+此包还提供了设计用于多线程上下文中的Collection实现:
+ConcurrentHashMap,ConcurrentSkipListMap,ConcurrentSkipListSet, CopyOnWriteArrayList 和 CopyOnWriteArraySet;
+当期望许多线程访问一个给定collection时,ConcurrentHashMap通常优于同步的HashMap; ConcurrentSkipListMap通常优于同步的TreeMap;
+当期望的读数和遍历远远大于列表的更新数时, CopyOnWriteArrayList优于同步的ArrayList;
+
+CountDownLatch(闭锁)是一个同步辅助类,在完成一组正在其他线程中执行的操作之前,它允许一个或多个线程一直等待;
+
+5.相较于实现 Runnable 接口的方式,实现 Callable 接口类中的方法可以有返回值,并且可以抛出异常 【看一下笔记】
+
+6.非静态方法的锁默认为 this, 静态方法的锁为 "对应的Class实例";
+
+7.
+synchronized：隐式锁，同步代码块、同步方法Jdk1.5后：同步锁Lock，是一种显式锁 ，需要通过lock()方式上锁，必须通过unlock方法进行释放锁；
+
+7.线程池
+线程池提供了一个线程队列,队列中保存着所有等待状态的线程;
+避免了创建与销毁线程的额外开销,提高了响应速度;
+
+线程池的体系结构
+java.util.concurrent.Executor: 负责线程的使用和调度的根接口;
+ExecutorService: 子接口,线程池的主要接口;
+ThreadPoolExecutor: 线程池的实现类;
+ScheduledExecutorService: 子接口,负责线程的调度;
+ScheduledThreadPoolExecutor: 继承了线程池的实现类,实现了负责线程调度的子接口;
+
+工具类: Executors
+ExecutorService newFixedThreadPool(): 创建固定大小的线程池;
+ExecutorService newCachedThreadPool(): 缓存线程池,线程池中线程的数量不固定,可以根据需求自动更改数量;
+ExecutorService newSingleThreadExecutor(): 创建单个线程池, 线程池中只有一个线程;
+ScheduledExecutorService newScheduledThreadPool(): 创建固定大小的线程,可以延时或定时的执行任务;
+
+8.AtomicInteger：
+int addAndGet(int delta)：将给定值与当前值相加。 即为线程安全版本的: i =i+delta。
+boolean compareAndSet(int expect, int update)：如果当前值 == 预期值，则将该值设置为给定的更新值。 如果成功就返回true，否则返回false，并且不修改原值。
+int getAndAdd(int delta)：将给定值与当前值相加。  即为线程安全版本的t=i;i+=delta;return t;操作。
+int getAndDecrement()：将当前值减 1。  即为线程安全版本的i–-操作。
+int getAndIncrement()：将当前值加 1。  即为线程安全版本的i++操作。
+int decrementAndGet()：将当前值减 1。  即为线程安全版本的–-i操作。
+int incrementAndGet()：将当前值加 1。  即为线程安全版本的++i操作。
+int getAndSet(int newValue)：设置为给定值，并返回旧值。  即为线程安全版本的t=i;i=newValue;return t;操作。
+
+9. Lock 锁
+Synchronized属于独占锁，高并发时性能不高，JDK5以后开始用JNI实现更高效的锁操作。
+
+Lock—->
+ReentrantLock—->
+ReentrantReadWriteLock.ReadLock / ReentrantReadWriteLock.writeLock
+ReadWriteLock—-> ReentrantReadWriteLock
+LockSupport
+Condition
+
+方法名称														作用
+void lock()												获取锁。如果锁不可用，出于线程调度目的，将禁用当前线程，并且在获得锁之前，该线程将一直处于休眠状态。
+void lockInterruptibly() throws InterruptedException;	如果当前线程未被中断，则获取锁。如果锁可用，则获取锁，并立即返回。
+Condition newCondition();								返回绑定到此 Lock 实例的新 Condition实例
+boolean tryLock();										仅在调用时锁为空闲状态才获取该锁
+boolean tryLock(long time, TimeUnit unit) throws InterruptedException;	如果锁在给定的等待时间内空闲，并且当前线程未被中断，则获取锁
+void unlock();											释放锁
+注：一般来说，获取锁和释放锁是成对儿的操作，这样可以避免死锁和资源的浪费。在 finally 里面做释放锁的操作

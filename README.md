@@ -16,7 +16,8 @@ encrypt| 加密相关
 ftp| ftp
 jconcurrencypte | <<JAVA并发编程实战>>
 jdbcpool | 数据库连接池
-jees | java基础拾遗
+jees | java基础拾遗 
+juc | java并发
 netty | netty
 newFeatures | jdk1.8新特性
 nio | Nio
