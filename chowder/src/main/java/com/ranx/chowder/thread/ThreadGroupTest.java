@@ -1,9 +1,5 @@
 package com.ranx.chowder.thread;
 
-import java.util.Date;
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
-
 /**
  * @Description
  * @author ranx
@@ -12,18 +8,18 @@ import java.util.concurrent.TimeUnit;
  */
 public class ThreadGroupTest {
 	public static class MyRunnable implements Runnable {
-		@Override
-		public void run() {
-			for (int i = 0; i < 100; i++) {
-				System.out.println(Thread.currentThread().getName() + " .......... " + i);
+			@Override
+			public void run() {
+				for (int i = 0; i < 100; i++) {
+					System.out.println(Thread.currentThread().getName() + " .......... " + i);
+				}
+
 			}
 
 		}
 
-	}
-
-	public static void main(String[] args) {
-		ThreadGroup tg = new ThreadGroup("new threadCroup"); // 创建新的线程组
+		public static void main(String[] args) {
+			ThreadGroup tg = new ThreadGroup("new threadCroup"); // 创建新的线程组
 		MyRunnable mr = new MyRunnable();
 		Thread t1 = new Thread(mr, "t1  Thread");
 		Thread t2 = new Thread(tg, mr, "t2  Thread"); // 将线程t2放在组中

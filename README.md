@@ -31,10 +31,6 @@ thread | 线程
 - Netty
 - 网络安全通信---AES+BASE64
 
-#### cmstemp: CMS模板 And CV工具 
-1. springboot2.x + mybatis + Thymeleaf + H_UI.admin 
-2. pagehelper
-3. //Todo 
 
  
 #### quickx-utils: 工具类

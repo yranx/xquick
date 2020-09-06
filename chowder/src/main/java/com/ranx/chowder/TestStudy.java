@@ -1,10 +1,8 @@
 package com.ranx.chowder;
 
-import java.lang.reflect.MalformedParameterizedTypeException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import org.joda.time.LocalDate;
+import org.joda.time.Months;
+
 
 /**
  * @author ranx
@@ -69,12 +67,16 @@ public class TestStudy {
 //        }
 
     public static void main(String[] args) {
-       System.out.println(("Admin").toLowerCase() == "admin");
-       System.out.println("\\123456\123456\t".length());
-        System.out.println("123456\123456\t".length());
-        System.out.println("over");
-        nullMethod();
+//       System.out.println(("Admin").toLowerCase() == "admin");
+//       System.out.println("\\123456\123456\t".length());
+//        System.out.println("123456\123456\t".length());
+//        System.out.println("over");
+//        nullMethod();
 
+        LocalDate dateBefore= LocalDate.parse("2016-08-31");
+        LocalDate dateAfter = LocalDate.parse("2016-11-30");
+        int months = Months.monthsBetween(dateBefore, dateAfter).getMonths();
+        System.out.println(months);
     }
 
     public static Integer nullMethod(){
