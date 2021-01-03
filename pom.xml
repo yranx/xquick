@@ -71,7 +71,6 @@
   </repositories>
 
   <modules>
-      <module>quickx-utils</module>
       <module>chowder</module>
       <module>xlogs</module>
   </modules>

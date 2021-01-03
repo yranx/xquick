@@ -29,11 +29,9 @@ notes说明 | 《重构，改善既有代码的设计》 |
  |  | Netty |   
  |  |网络安全通信---AES+BASE64 | 
  |  | | 
-quickx-utils |  工具类|
- |  |CheckValue| 校验参数的工具类
- |  |SysTimeUtil| 获取当前时间
- |  | | 
-xlogs |日志总结 | Log4j、log4j2、slf4j+Logback
+ xlogs |日志总结 | Log4j、log4j2、slf4j+Logback
+
+
 
 
 ##### 快拆工具箱,偏向纯java项目
