@@ -12,7 +12,7 @@ chowder|jvm|classLoader
  |  | dbexport | 数据库表导出（考虑做成页面选择形式）
  |  | deepinjvm | 《深入理解java虚拟机:JVM高级特性与最佳实践》
  |  | designPatterns| 设计模式
- |  | encrypt| 加密相关
+ |  | encrypt| 加密、加签验签相关
  |  | ftp| ftp
  |  | jconcurrencypte | <<JAVA并发编程实战>>
  |  | jdbcpool | 数据库连接池
