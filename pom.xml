@@ -5,10 +5,10 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.ranx</groupId>
-  <artifactId>quickx</artifactId>
+  <artifactId>xquick</artifactId>
   <version>1.0</version>
   <packaging>pom</packaging>
-  <name>quickx</name>
+  <name>xquick</name>
   <!-- FIXME change it to the project's website -->
   <url>http://www.example.com</url>
 
@@ -28,7 +28,7 @@
   </dependencies>
 
   <build>
-    <finalName>quickx</finalName>
+    <finalName>xquick</finalName>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -49,7 +49,7 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
         <configuration>
-          <mainClass>com.ranx.cmstemp.CmstempApplication</mainClass>
+          <mainClass>com.ranx.chowder.XdocApplication</mainClass>
         </configuration>
         <executions>
           <execution>
@@ -73,5 +73,6 @@
   <modules>
       <module>chowder</module>
       <module>xlogs</module>
+    <module>xdoc</module>
   </modules>
 </project>
